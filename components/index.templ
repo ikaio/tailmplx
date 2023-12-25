@@ -28,27 +28,6 @@ templ Header(links []string) {
 	</div>
 }
 
-templ Home(cookies string) {
-	<button class="flex w-full flex-wrap gap-4" type="button" hx-get="/dc/products" hx-trigger="click" hx-swap="afterbegin">
-		@Products(cookies)
-		<div class="px-3 py-2 bg-emerald-500 hover:bg-emerald-600 duration-100 font-bold rounded">
-			+ Show More Products
-		</div>
-	</button>
-}
-
-templ Products(cookies string) {
-	for i := 0; i < 2; i++ {
-		<div class="aspect-[3/1] w-[48%] flex gap-2 overflow-hidden">
-			<img src="/assets/flufy-bag.jpg" class="h-full rounded"/>
-			<div class="flex flex-col text-left">
-				<h1 class="font-bold text-xl">Fluffy Bag Adidas</h1>
-				<h2 class="font-semibold text-xs">A remedy is a solution or treatment designed to alleviate or cure a problem, ailment, or difficulty. It’s something intended to correct or improve a situation, often in the context of health or well-being.</h2>
-			</div>
-		</div>
-	}
-}
-
 type PageProps struct {
 	Language string
 }
