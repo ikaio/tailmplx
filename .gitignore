@@ -1,7 +1,10 @@
 tmp
 go.sum
-*_templ.go
 node_modules
 pnpm-lock.yaml
-public/assets/output.css
+build
+
 *.db
+*_templ.go
+
+public/assets/output.css

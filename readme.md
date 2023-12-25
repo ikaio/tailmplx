@@ -13,6 +13,16 @@ cd ..
 air
 ```
 
+# Build
+```sh
+mkdir build
+cp -r public build
+cp -r database build
+cp -r tmp/main build/main
+zip -r build build
+rm -rf build
+```
+
 ## TailwindCSS IntelliSense
 Getting it working by mapping it to HTML.
 ```js
