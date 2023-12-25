@@ -2,6 +2,7 @@ package main
 
 import (
 	"errors"
+	"fmt"
 	"io/fs"
 	"net/http"
 	"os"
@@ -68,5 +69,7 @@ func main() {
 	// NOTE: components and pages may overwrite files
 	components.Init(r)
 
-	http.ListenAndServe(":"+os.Getenv("PORT"), r)
+	addrs := ":" + os.Getenv("PORT")
+	fmt.Println("Running on", addrs)
+	http.ListenAndServe(addrs, r)
 }
