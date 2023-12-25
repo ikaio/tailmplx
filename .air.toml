@@ -2,8 +2,8 @@ root = "."
 tmp_dir = "tmp"
 
 [build]
-  bin = "./tmp/main"
-  cmd = "templ generate && (cd styles && pnpm run build && cd ..) && go build -o ./tmp/main ."
+  bin = "./tmp/dev"
+  cmd = "templ generate && (cd styles && pnpm run build && cd ..) && go build -o ./tmp/dev ."
   delay = 1000
   exclude_dir = ["public", "tmp", "styles"]
   exclude_regex = [".*_templ.go"]

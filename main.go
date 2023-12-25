@@ -13,6 +13,7 @@ import (
 	"github.com/go-chi/chi/v5/middleware"
 	"github.com/ikaio/tailmplx/components"
 	_ "github.com/ikaio/tailmplx/database"
+	_ "github.com/joho/godotenv/autoload"
 )
 
 // https://github.com/go-chi/chi/blob/master/_examples/fileserver/main.go
@@ -67,5 +68,5 @@ func main() {
 	// NOTE: components and pages may overwrite files
 	components.Init(r)
 
-	http.ListenAndServe(":3000", r)
+	http.ListenAndServe(":"+os.Getenv("PORT"), r)
 }
