@@ -10,11 +10,13 @@ import (
 	"strings"
 	"time"
 
+	// IKAIO: env on top so USE_DATABASE is available for database.go
+	_ "github.com/joho/godotenv/autoload"
+
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
 	"github.com/ikaio/tailmplx/components"
-	_ "github.com/ikaio/tailmplx/database"
-	_ "github.com/joho/godotenv/autoload"
+	"github.com/ikaio/tailmplx/database"
 )
 
 // https://github.com/go-chi/chi/blob/master/_examples/fileserver/main.go
@@ -42,8 +44,10 @@ func FileServer(router *chi.Mux, path, root string) {
 			return
 		}
 
-		// Cache for public files: 604800 = 1 week
-		// w.Header().Set("Cache-Control", "public, max-age=604800")
+		if os.Getenv("ENABLE_PUBLIC_FOLDER_CACHE") != "1" {
+			// 1 week
+			w.Header().Set("Cache-Control", "public, max-age=604800")
+		}
 
 		fs := http.StripPrefix(pathPrefix, http.FileServer(rootfs))
 		fs.ServeHTTP(w, r)
@@ -68,8 +72,11 @@ func main() {
 	FileServer(r, "/", "./public")
 	// NOTE: components and pages may overwrite files
 	components.Init(r)
-
-	addrs := ":" + os.Getenv("PORT")
-	fmt.Println("Running on", addrs)
-	http.ListenAndServe(addrs, r)
+	database.Init()
+	
+	fmt.Println("[CONFIG] Choosen PORT:", os.Getenv("PORT"))
+	err := http.ListenAndServe(":"+os.Getenv("PORT"), r)
+	if err != nil {
+		panic(err)
+	}
 }

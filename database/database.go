@@ -4,6 +4,7 @@ import (
 	"encoding/binary"
 	"encoding/json"
 	"fmt"
+	"os"
 
 	"github.com/bwmarrin/snowflake"
 	"go.etcd.io/bbolt"
@@ -54,7 +55,7 @@ func ListCustomers(limit int) (list []*Customer, err error) {
 	return
 }
 
-func init() {
+func Init() {
 	fmt.Println("[DB] was requested, initializing...")
 
 	// Setup snowflake node for id generation
@@ -64,7 +65,14 @@ func init() {
 	}
 	SnowflakeNode = node
 
-	db, err := bbolt.Open("database/test.db", 0600, nil)
+	database_path, ok := os.LookupEnv("USE_DATABASE")
+	if !ok {
+		fmt.Println("[CONFIG-ERROR] Database file not specified.")
+		os.Exit(1)
+	}
+
+	fmt.Println("[CONFIG] Choosen DATABASE:", database_path)
+	db, err := bbolt.Open(database_path, 0600, nil)
 	if err != nil {
 		panic(err)
 	}
