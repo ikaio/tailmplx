@@ -67,11 +67,11 @@ func Init() {
 
 	database_path, ok := os.LookupEnv("USE_DATABASE")
 	if !ok {
-		fmt.Println("[CONFIG-ERROR] Database file not specified.")
+		fmt.Println("[CONFIG-ERROR] USE_DATABASE not specified.")
 		os.Exit(1)
 	}
 
-	fmt.Println("[CONFIG] Choosen DATABASE:", database_path)
+	fmt.Println("[CONFIG] DATABASE:", database_path)
 	db, err := bbolt.Open(database_path, 0600, nil)
 	if err != nil {
 		panic(err)

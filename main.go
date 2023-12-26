@@ -10,13 +10,11 @@ import (
 	"strings"
 	"time"
 
-	// IKAIO: env on top so USE_DATABASE is available for database.go
-	_ "github.com/joho/godotenv/autoload"
-
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
 	"github.com/ikaio/tailmplx/components"
 	"github.com/ikaio/tailmplx/database"
+	"github.com/joho/godotenv"
 )
 
 // https://github.com/go-chi/chi/blob/master/_examples/fileserver/main.go
@@ -44,7 +42,7 @@ func FileServer(router *chi.Mux, path, root string) {
 			return
 		}
 
-		if os.Getenv("ENABLE_PUBLIC_FOLDER_CACHE") != "1" {
+		if os.Getenv("ENABLE_PUBLIC_FOLDER_CACHE") == "1" {
 			// 1 week
 			w.Header().Set("Cache-Control", "public, max-age=604800")
 		}
@@ -55,6 +53,7 @@ func FileServer(router *chi.Mux, path, root string) {
 }
 
 func main() {
+	godotenv.Overload(".env.dev", ".env.prod", ".env")
 
 	r := chi.NewRouter()
 
@@ -74,7 +73,9 @@ func main() {
 	components.Init(r)
 	database.Init()
 	
-	fmt.Println("[CONFIG] Choosen PORT:", os.Getenv("PORT"))
+	fmt.Println("[CONFIG] PORT:", os.Getenv("PORT"))
+	fmt.Println("[CONFIG] ENABLE_PUBLIC_FOLDER_CACHE:", os.Getenv("ENABLE_PUBLIC_FOLDER_CACHE"))
+
 	err := http.ListenAndServe(":"+os.Getenv("PORT"), r)
 	if err != nil {
 		panic(err)

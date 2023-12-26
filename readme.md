@@ -19,7 +19,7 @@ mkdir build
 cp -r public build
 cp -r database build
 cp -r tmp/main build/main
-cp -r .env build/.env
+cp -r .env.dev build/.env.dev
 zip -r build build
 rm -rf build
 ```
