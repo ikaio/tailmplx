@@ -1,0 +1,78 @@
+package components
+
+import "github.com/ikaio/tailmplx/router"
+import "net/http"
+import "os"
+import "strconv"
+import "github.com/ikaio/tailmplx/database"
+import "strings"
+import "path"
+
+func init() {
+	router.Router.Post("/i/upload", func(w http.ResponseWriter, r *http.Request) {
+		err := r.ParseMultipartForm(5 << 20)
+		if err != nil {
+			Error("Max file size is: 5mb", 400).Render(context.TODO(), w)
+			return
+		}
+
+		file, handler, err := r.FormFile("file")
+		if err != nil {
+			Error("Error while getting file: "+err.Error(), 500).Render(context.TODO(), w)
+			return
+		}
+		defer file.Close()
+
+		upload := database.Upload{
+			ID:     database.SnowflakeNode.Generate().String(),
+			Title:  r.FormValue("title"),
+			Author: r.FormValue("author"),
+		}
+		upload.Filename = upload.ID + "_" + strings.ToLower(strings.ReplaceAll(handler.Filename, " ", "-"))
+
+		f, err := os.OpenFile("public/upload/"+upload.Filename, os.O_WRONLY|os.O_CREATE, 0666)
+		if err != nil {
+			Error("Error while creating file: "+err.Error(), 500).Render(context.TODO(), w)
+			return
+		}
+		defer f.Close()
+
+		_, err = io.Copy(f, file)
+		if err != nil {
+			Error("Error while copying your file: "+err.Error(), 500).Render(context.TODO(), w)
+			return
+		}
+
+		err = upload.Save()
+		if err != nil {
+			Error("Error while saving your upload to database: "+err.Error(), 500).Render(context.TODO(), w)
+			return
+		}
+
+		DisplayUpload(&upload).Render(context.TODO(), w)
+	})
+}
+
+templ Error(message string, code int) {
+	{ strconv.Itoa(code) }: { message }
+}
+
+templ DisplayUpload(upload *database.Upload) {
+	<div class="relative flex items-center justify-center bg-white/25 w-full sm:w-[49%] lg:w-auto lg:aspect-[1.5/1] h-60">
+		switch path.Ext(upload.Filename) {
+			case ".mp3", ".wav":
+				<audio controls>
+					<source src={ "/upload/" + upload.Filename }/>
+				</audio>
+			case ".mp4", ".avi":
+				<video controls src={ "/upload/" + upload.Filename } class="w-3/4 max-h-[90%]"></video>
+			case ".png", ".jpg", ".jpeg", ".gif", ".webp":
+				<img src={ "/upload/" + upload.Filename } class="h-60 object-contain"/>
+			default:
+				Your file is here: { "/upload/"+upload.Filename }
+		}
+		<div class="p-2 text-lg backdrop-blur bg-black bg-opacity-50 font-medium z-10 absolute w-full bottom-0 left-0">
+			{ upload.Title } <span class="text-white/20">by</span> { upload.Author }
+		</div>
+	</div>
+}

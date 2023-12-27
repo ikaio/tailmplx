@@ -1,8 +1,17 @@
 /** @type {import('tailwindcss').Config} */
+const defaultTheme = require('tailwindcss/defaultTheme')
+
 module.exports = {
   content: ["../components/**/*.templ"],
   theme: {
-    extend: {},
+    extend: {
+      boxShadow: {
+        
+      },
+      fontFamily: {
+        'sans': ['Jost', ...defaultTheme.fontFamily.sans],
+      },
+    },
   },
   plugins: [],
 }

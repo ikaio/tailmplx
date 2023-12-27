@@ -1,8 +1,17 @@
 package components
 
-templ NotFound() {
+import "github.com/ikaio/tailmplx/router"
+import "net/http"
+
+templ NotFound(path string) {
 	<div>
 		<h1 class="font-bold text-2xl">Page Not Found: 404</h1>
-		Sorry, we could not find this page. Maybe it was deleted or there is a typo, please try again or <a class="text-blue-500" href="/">return to the home page.</a>
+		Sorry, we could not find <span class="text-blue-500">{ path }</span>. Maybe it was deleted or there is a typo, please try again or <a class="text-blue-500" href="/">return to the home page.</a>
 	</div>
+}
+
+func init() {
+	router.Router.NotFound(func(w http.ResponseWriter, r *http.Request) {
+		Page(NotFound(r.URL.Path), "Nalvok® / 404", DEFAULT_PROPS).Render(context.TODO(), w)
+	})
 }

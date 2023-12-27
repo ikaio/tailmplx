@@ -7,47 +7,42 @@ import (
 	"os"
 
 	"github.com/bwmarrin/snowflake"
+	"github.com/joho/godotenv"
 	"go.etcd.io/bbolt"
 )
 
 var DB *bbolt.DB
 var SnowflakeNode *snowflake.Node
 
-type Customer struct {
-	Sequence  int
-	Snowflake string
+type Upload struct {
+	ID string
+	Filename string
+	Title string
+	Author string
 }
 
-func CreateCustomer(c *Customer) error {
+func (c *Upload) Save() error {
 	return DB.Update(func(tx *bbolt.Tx) error {
-		b := tx.Bucket([]byte("customers"))
-
-		id, err := b.NextSequence()
-		if err != nil {
-			return err
-		}
-
-		c.Snowflake = SnowflakeNode.Generate().String()
-		c.Sequence = int(id)
+		b := tx.Bucket([]byte("uploads"))
 
 		buf, err := json.Marshal(c)
 		if err != nil {
 			return err
 		}
 
-		return b.Put([]byte(itob(c.Sequence)), buf)
+		return b.Put([]byte(c.ID), buf)
 	})
 }
 
-func ListCustomers(limit int) (list []*Customer, err error) {
+func ListUploads(limit int) (list []*Upload, err error) {
 	err = DB.View(func(tx *bbolt.Tx) error {
-		b := tx.Bucket([]byte("customers"))
+		b := tx.Bucket([]byte("uploads"))
 		c := b.Cursor()
 
 		for k, v := c.First(); k != nil && len(list) < limit; k, v = c.Next() {
-			var customer Customer
-			json.Unmarshal(v, &customer)
-			list = append(list, &customer)
+			var upload Upload
+			json.Unmarshal(v, &upload)
+			list = append(list, &upload)
 		}
 
 		return nil
@@ -55,8 +50,8 @@ func ListCustomers(limit int) (list []*Customer, err error) {
 	return
 }
 
-func Init() {
-	fmt.Println("[DB] was requested, initializing...")
+func init() {
+	godotenv.Overload(".env.dev", ".env.prod", ".env")
 
 	// Setup snowflake node for id generation
 	node, err := snowflake.NewNode(1)
@@ -78,7 +73,7 @@ func Init() {
 	}
 
 	err = db.Update(func(tx *bbolt.Tx) error {
-		tx.CreateBucketIfNotExists([]byte("customers"))
+		tx.CreateBucketIfNotExists([]byte("uploads"))
 		return nil
 	})
 
@@ -87,7 +82,6 @@ func Init() {
 	}
 
 	DB = db
-	CreateCustomer(&Customer{})
 }
 
 // itob returns an 8-byte big endian representation of v.

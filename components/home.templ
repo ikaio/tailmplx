@@ -1,22 +1,27 @@
 package components
 
-templ Products(cookies string) {
-	for i := 0; i < 2; i++ {
-		<div class="aspect-[3/1] w-[48%] flex gap-2 overflow-hidden">
-			<img src="/assets/flufy-bag.jpg" class="h-full rounded"/>
-			<div class="flex flex-col text-left">
-				<h1 class="font-bold text-xl">Fluffy Bag Adidas</h1>
-				<h2 class="font-semibold text-xs">A remedy is a solution or treatment designed to alleviate or cure a problem, ailment, or difficulty. It’s something intended to correct or improve a situation, often in the context of health or well-being.</h2>
-			</div>
+import "github.com/ikaio/tailmplx/database"
+import "github.com/ikaio/tailmplx/router"
+import "net/http"
+
+templ Home() {
+	★ Recent moments
+	if list, err := database.ListUploads(100); err == nil {
+		<div class="w-full flex flex-wrap gap-2">
+			for _, upload := range list {
+				@DisplayUpload(upload)
+			}
 		</div>
+		if len(list) == 0 {
+			No uploads found.
+		}
+	} else {
+		Error trying get uploads list
 	}
 }
 
-templ Home(cookies string) {
-	<button class="flex w-full flex-wrap gap-4" type="button" hx-get="/dc/products" hx-trigger="click" hx-swap="afterbegin">
-		@Products(cookies)
-		<div class="px-3 py-2 bg-emerald-500 hover:bg-emerald-600 duration-100 font-bold rounded">
-			+ Show More Products
-		</div>
-	</button>
+func init() {
+	router.Router.Get("/", func(w http.ResponseWriter, r *http.Request) {
+		Page(Home(), "Nalvok® / Home", DEFAULT_PROPS).Render(context.TODO(), w)
+	})
 }

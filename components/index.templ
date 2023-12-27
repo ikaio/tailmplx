@@ -8,20 +8,9 @@ templ Header(links []string) {
 			@Logo()
 		</a>
 		<div class="flex items-center gap-4">
-			/* <div class="flex gap-2">
-				for _, link := range links {
-					<a href={ templ.SafeURL(link) } class="hover:font-bold uppercase">{ link }</a>
-				}
-			</div> */
 			<div class="flex gap-3">
-				<a href="/cart">
-					@IconShoppingBag()
-				</a>
-				<a href="/account">
-					@IconUser()
-				</a>
-				<a href="/about">
-					@IconInfo()
+				<a href="/publish">
+					@IconFilePlus()
 				</a>
 			</div>
 		</div>
@@ -37,9 +26,12 @@ templ Page(page templ.Component, title string, props PageProps) {
 		<head>
 			<meta charset="UTF-8"/>
 			<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-			<script src="https://unpkg.com/htmx.org@1.9.9"></script>
-			<meta name="htmx-config" content='{"includeIndicatorStyles": false}'/>
+			<script src="//unpkg.com/htmx.org@1.9.9"></script>
+			<script src="//unpkg.com/alpinejs@3.13.3" defer></script>
 			<link href="/assets/output.css" rel="stylesheet"/>
+			<link rel="preconnect" href="//fonts.googleapis.com"/>
+			<link rel="preconnect" href="//fonts.gstatic.com" crossorigin/>
+			<link href="//fonts.googleapis.com/css2?family=Jost:wght@400;500;700&display=swap" rel="stylesheet"/>
 			<title>{ title }</title>
 		</head>
 		<body class="dark:text-white dark:bg-zinc-900">

@@ -8,3 +8,4 @@ build
 *_templ.go
 
 public/assets/output.css
+public/upload/

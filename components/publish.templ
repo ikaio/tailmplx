@@ -1,0 +1,31 @@
+package components
+
+import "github.com/ikaio/tailmplx/router"
+import "net/http"
+
+templ Publish() {
+	★ Create a new moment
+	<form class="flex flex-col gap-2" id="form" hx-encoding="multipart/form-data" hx-post="/i/upload">
+		<label for="title">Moment Title</label>
+		<input class="p-2 bg-white/25 rounded" name="title" type="text" placeholder="e.g: Atmospherical mysterious modern house in the forest." maxlength="100"/>
+		
+		<label for="author">Author Identifier</label>
+		<input class="p-2 bg-white/25 rounded" name="author" type="text" placeholder="e.g: Mike Longborn" maxlength="20"/>
+
+		<input class="p-20 bg-blue-600/25" type="file" name="file"/>
+
+		<button class="bg-amber-500 px-3 py-2">Publish</button>
+		<progress class="w-full h-2" id="progress" value="0" max="100"></progress>
+	</form>
+	<script>
+        htmx.on('#form', 'htmx:xhr:progress', function(evt) {
+          htmx.find('#progress').setAttribute('value', evt.detail.loaded/evt.detail.total * 100)
+        });
+    </script>
+}
+
+func init() {
+	router.Router.Get("/publish", func(w http.ResponseWriter, r *http.Request) {
+		Page(Publish(), "Nalvok® / Publish", DEFAULT_PROPS).Render(context.TODO(), w)
+	})
+}
