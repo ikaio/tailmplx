@@ -1,35 +1,13 @@
-Go + HTMX + Templ + Tailwind
-
+Go + Templ + HTMX + Tailwind
 # Setup
-```sh
-go install github.com/cosmtrek/air@latest
-go get
+1. Make sure you have **Go** & **Node NPM**.
+2. Make sure you have the **just** command-runner installed: [just](https://github.com/casey/just)
+3. Install: **Air**, **PNPM** and project dependencies: `just install`
+4. Finally, you're ready to run: `air`
+# Releasing
+Build a production release by running: `just release`, it will:
 
-npm install -g pnpm
-cd styles
-pnpm i
+1. Create a `/release` folder with `/public` and the binary in it.
+	- (gets deleted afterwards so you won't see it)
+2. Zip it into `release.zip`.
 
-cd ..
-air
-```
-
-# Build
-```sh
-mkdir build
-rm -rf public/upload
-mkdir public/upload
-cp -r public build
-cp -r tmp/main build/main
-cp -r .env.dev build/.env.dev
-zip -r build build
-rm -rf build
-```
-
-## TailwindCSS IntelliSense
-Getting it working by mapping it to HTML.
-```js
-// settings.json
-"tailwindCSS.includeLanguages": {
-    "templ": "html"
-}
-```

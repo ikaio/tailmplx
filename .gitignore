@@ -2,7 +2,7 @@ tmp
 go.sum
 node_modules
 pnpm-lock.yaml
-build
+release
 
 *.db
 *_templ.go
